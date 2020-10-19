@@ -87,11 +87,8 @@ void TST::lookup(string word, Node* n){
 void TST::insert(string word) {
     // handle special case of empty tree first
     if (!root){
-	root = new Node(word); 
-        if(root->keyRight.second == 0){
-         root->keyLeft.second = root->keyLeft.second + 1; 
-	}
-	cout<<word<<" inserted, new count = "<<root->keyLeft.second<<endl;
+	root = new Node(word);  
+	cout<<word<<" inserted, new count = "<<1<<endl;
     }
     // otherwise use recursive helper
     else{ 
@@ -108,44 +105,69 @@ void TST::insert(string word, Node* n) {
            
     //first check root and what it's got goin' on up there, the only n coming in here should be root's  
     //but before we move on, check if it equals what's going on, and INTERVENE accordingly
-    if( ((word.compare(n->keyLeft.first))==0 )){ n->keyLeft.second = (n->keyLeft.second)+1; return; }
-    else if((word.compare(n->keyRight.first))==0){ n->keyRight.second = (n->keyRight.second)+1; return; }
-
-	//next check if there is a keyRight value 
+    if( ((word.compare(n->keyLeft.first))==0 )){ n->keyLeft.second++ ; cout<<word<<" inserted, new count = "<<n->keyLeft.second<<endl; return; }
+ 
+    //next check if there is a keyRight value 
 	//if there isn't handle it properly
-       else if(n->keyRight.second == 0){
+       if(n->keyRight.second == 0){
 	   //if the value is less than keyLeft, switch keyLeft and keyRight
-	   if((word.compare(n->keyLeft.first))<0 ){
-            string tempString = n->keyLeft.first;
-	    int tempCount = n->keyLeft.second;
-	    n->keyLeft.first = word; 
-	    n->keyRight.first = tempString;
-	    n->keyRight.second = tempCount; 
-	    cout<<word<<" inserted, new count = "<<n->keyLeft.second++<<endl;
-	    return;
+	   if((word.compare(n->keyLeft.first))<0 ){ 
+	  
+	    n->keyRight.first = n->keyLeft.first;
+	    n->keyRight.second = n->keyLeft.second; 
+	    n->keyLeft.first = word;
+	    n->keyLeft.second = 1;  
 	   }else{
            //put it in keyRight
 	   n->keyRight.first = word;
-	   cout<<word<<" inserted, new count = "<<n->keyRight.second<<endl;
-	   return;
+	   n->keyRight.second = 1; 
 	   }//end of else
+           cout<<word<<" inserted, new count = "<<1<<endl;
+	   return;
 	} //end of if keyright is zero
+
+        //cout<<"word test: "<<word<<" , "<<n->keyRight.second<<endl;
+
+       if((word.compare(n->keyRight.first))==0){ n->keyRight.second = (n->keyRight.second)+1; cout<<word<<" inserted, new count = "<<n->keyRight.second<<endl; return; }
+       //cout<<"word: "<<word<<" , "<<n->keyRight.second<<endl;
 
 
     	//Next we working on checking left and right entries to see if it has a chance at even being in this node - if not, try in another place zibs
-	else if(( word.compare(n->keyLeft.first))<0 ){
-	  if(n->left==nullptr) n->left = new Node(word);
-	  insert(word,n->left);  //check if it's negative one, (means smaller) ain't boutta be in here
-	}//end of smaller than left check 
+       if(( word.compare(n->keyLeft.first))<0 ){
+	  if(n->left==nullptr){
+	   n->left = new Node(word);
+	   n->left->parent = n; 
+	   cout<<word<<" inserted, new count = "<<1<<endl;
+	   return;
+	  } else {
+	   return insert(word,n->left); 
+	  } //check if it's negative one, (means smaller) ain't boutta be in here
+	}//end of smaller than left check
+
 	else if(( word.compare(n->keyRight.first))>0 ){ 
 	  //check if it's one, (that means bigger) it ain't boutta be in here  
-	  if(n->right==nullptr)n->right = new Node(word);
-	  insert(word, n->right); 	
+	  if(n->right==nullptr){
+	    n->right = new Node(word);
+	    n->right->parent = n;
+            cout<<word<<" inserted, new count = "<<1<<endl;
+	   return;
+
+
+	  }else{
+	  insert(word, n->right);
+	  }	  
 	}//end of else if 
 	else{
 	//now if it passed through all of those, we can throw it into the middle and let it recursively take care of itself 
-    	 if(n->middle==nullptr)n->middle = new Node (word);
+    	 if(n->middle==nullptr){
+	   n->middle = new Node (word);
+	   n->middle->parent = n; 
+           cout<<word<<" inserted, new count = "<<1<<endl;
+	   return;
+
+         } else{
 	 insert(word, n->middle); 
+	 }
 	}
 
     } //end of NULL NODE check 

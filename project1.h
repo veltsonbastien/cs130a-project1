@@ -35,11 +35,11 @@ class TST {
 	Node *left = nullptr;
 	Node *right = nullptr;
 	Node *middle = nullptr;
-        
+        Node *parent = nullptr;         
 
         Node(string word){
 	  this->keyLeft.first = word; 
-	  this->keyLeft.second = 0;
+	  this->keyLeft.second = 1;
 	  this->keyRight.second = 0;  
 	}
     };
