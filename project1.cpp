@@ -181,11 +181,13 @@ void TST::insert(string word, Node* n) {
 
 //go through everything, but only print if it's between the range
 void TST::print(Node* n, string word1, string word2) const{
+   if(n!=nullptr){
     if(n->left) print(n->left,word1,word2); 
     if( ((n->keyLeft.first.compare(word1))>0 && (n->keyLeft.first.compare(word2))<0 ) || ((n->keyLeft.first.compare(word1))==0 || (n->keyLeft.first.compare(word2))==0 )) cout<<n->keyLeft.first<<endl;
     if(n->middle) print(n->middle,word1,word2);
-    if( ((n->keyRight.first.compare(word1))>0 && (n->keyRight.first.compare(word2))>0) || ((n->keyRight.first.compare(word1))==0 || (n->keyRight.first.compare(word2))==0 )) cout<<n->keyRight.first<<endl;
+    if( ((n->keyRight.first.compare(word1))>0 && (n->keyRight.first.compare(word2))<0) || ((n->keyRight.first.compare(word1))==0 || (n->keyRight.first.compare(word2))==0 )) cout<<n->keyRight.first<<endl;
     if(n->right) print(n->right,word1,word2);
+ }
 }
 
 //do a range search given two words 
@@ -249,7 +251,7 @@ int main(int argc, char *argv[]){
      }
      else if((tempCommand.at(0)).compare("range_search") ==0){
        //make sure both get turned to chars 
-       tree.range_search(tempCommand.at(1), tempCommand.at(2)); 
+       tree.range_search(tempCommand.at(1), tempCommand.at(3)); 
      }
    }//end of for loop
 
