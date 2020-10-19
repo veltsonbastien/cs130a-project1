@@ -53,12 +53,12 @@ void TST::lookup(string word, Node* n){
     	//first check root and what it's got goin' on up there, the only n coming in here should be root's  
     	//but before we move on, check if it equals what's going on, and INTERVENE accordingly
     	if( word.compare(n->keyLeft.first)==0){
-        cout<<word<<" found, count="<<n->keyLeft.second<<endl;
+        cout<<word<<" found, count = "<<n->keyLeft.second<<endl;
 	return;
 	}//if it's in the key left
         //or is it found in key right
 	else if( word.compare(n->keyRight.first)==0){
-       	cout<<word<<" found, count="<<n->keyRight.second<<endl; 
+       	cout<<word<<" found, count = "<<n->keyRight.second<<endl; 
 	return;
     	}
 
