@@ -11,27 +11,61 @@
 #include <vector>
 
 using namespace std; 
-using std::cout;
-using std::string;
+
+
+
 
 
 // default constructor sets up empty tree
 TST::TST() : root(0) { }
 
 
-// destructor deletes all nodes
 TST::~TST() {
-    clear(root);
+  delete root;
 }
 
-// recursive helper for destructor
-void TST::clear(Node *n) {
-    if (n) {
-	clear(n->left);
-	clear(n->middle);
-	clear(n->right);
-	delete n;
-    }
+
+Node* TST::getNode(string word) const{
+      return getNode(root, word); 
+}
+
+Node* TST::getNode(Node* n, string word) const{
+        if(n == nullptr) return nullptr;
+     	if( word.compare(n->keyLeft.first)==0){
+	return n; 
+	}//if it's in the key left
+        //or is it found in key right
+        if( word.compare(n->keyRight.first)==0){
+       	return n; 
+    	}
+
+        //first check left and right entries to see if it has a chance at even being in this node - if not, try in another place zibsi
+    	if( (word.compare(n->keyLeft.first))<0 ) return getNode(n->left, word);  //check if it's negative one, (means smaller) ain't boutta be in here
+	//next check if there is a keyRight value 
+	else if((n->keyRight.second!=0) && (word.compare(n->keyRight.first))>0) return getNode(n->right, word); 
+
+	
+	//now if it passed through all of those, we can throw it into the middle and let it recursively take care of itself 
+    	return getNode(n->middle, word); 
+	
+        
+}//end of get node 
+
+std::string TST::getMin() const{
+ Node *t = root; 
+ while(t->left){
+  t=t->left;
+ }
+ return t->keyLeft.first; 
+}
+
+string TST::getMax() const{
+ Node *t = root;
+ while(t->right){
+  t=t->right;
+ }
+ if(t->keyLeft.second != 0) return t->keyRight.first; 
+ return t->keyLeft.first;
 }
 
 
@@ -196,6 +230,67 @@ void TST::range_search(string word1, string word2){
 }//end of rangeSearch
 
 
+void TST::removeWord(Node* n, string word){
+  if(n == nullptr) { return; }
+   if(n->keyRight.second !=0 && (n->keyRight.first).compare(word) == 0){
+     if(n->right != nullptr){
+       removeWord(n->right, getMin());      
+     } 
+     else if (n->middle != nullptr){
+       removeWord(n->middle, word); 
+     } 
+     else if (n->left != nullptr){ 
+       removeWord(n->middle, getMax()); 
+     }else{
+      n->right = nullptr; 
+     }
+   }
+   else if( (n->keyRight.first).compare(word)==0){
+     if(n->left != nullptr){
+          removeWord(n->left, getMax());
+     } 
+     else if (n->middle != nullptr){   
+	   removeWord(n->middle, word);
+     } 
+     else if (n->right != nullptr){
+          removeWord(n->right, word);
+     }
+      else{
+        if(n->keyRight.second !=0){
+          n->left = n->right; 
+	  n->right = nullptr; 
+	} 
+	else{
+         if( n == root) {
+          delete root; 
+	  root = nullptr;
+	 } else{
+          Node* parent = n->parent;
+	  if(n == parent->left) parent->left = nullptr;
+	  else if(n == parent->middle) parent->middle = nullptr;
+	  else {
+             parent->right = nullptr;
+           }
+	  delete n; 
+	  }
+	 
+	}
+      }
+   }
+   else{
+    if(word.compare(n->keyLeft.first) < 0) { removeWord(n->left, word); }
+    else if ( n->keyRight.second !=0 && word.compare(n->keyRight.first) <=0){
+     removeWord(n->middle, word); 
+    }
+    else{
+     removeWord(n->right, word); 
+    }
+
+   } 
+
+}
+
+
 
 
 //the main function and everything we need to actually use this big boi
@@ -252,6 +347,8 @@ int main(int argc, char *argv[]){
      else if((tempCommand.at(0)).compare("range_search") ==0){
        //make sure both get turned to chars 
        tree.range_search(tempCommand.at(1), tempCommand.at(3)); 
+     }else if((tempCommand.at(0)).compare("delete") ==0){
+       tree.removeWord(tree.getNode(tempCommand.at(1)),tempCommand.at(1)); 
      }
    }//end of for loop
 
